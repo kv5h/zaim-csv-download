@@ -1,0 +1,17 @@
+line-length = 120
+
+[lint]
+extend-select = [
+  "B",
+  "C4",
+  "D",
+  "E",
+  "F",
+  "I",
+  "N",
+  "RUF",
+  "SIM",
+  "T20",
+  "UP",
+  "W",
+]
