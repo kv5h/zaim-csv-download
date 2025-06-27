@@ -19,7 +19,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(filename)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(filename)s - %(levelname)s - %(message)s",
+)
 logger = logging.getLogger(__name__)
 
 # Check for environment variables for Zaim credentials
@@ -52,7 +55,11 @@ parser.add_argument(
     help="Output directory under ~/Downloads. Default: 'selenium_downloads'",
     default="selenium_downloads",
 )
-parser.add_argument("--prompt_for_download", help="Enable prompt for download confirmation", action="store_true")
+parser.add_argument(
+    "--prompt_for_download",
+    help="Enable prompt for download confirmation",
+    action="store_true",
+)
 parser.add_argument("-v", "--verbose", help="Enable verbose logging", action="store_true")
 args = parser.parse_args()
 
@@ -65,6 +72,7 @@ if not os.path.exists(download_dir):
     logger.debug(f"Creating download directory: {download_dir}")
     os.makedirs(download_dir)
 
+# Temporary directory setup
 temp_dir = tempfile.mkdtemp()
 logger.debug(f"Temporary directory created: {temp_dir}")
 
@@ -89,15 +97,15 @@ try:
     driver.find_element(By.ID, "password").send_keys(ZAIM_PASSWORD)
     driver.find_element(By.CLASS_NAME, "id-zaim-button__subtext").click()
 
-    try:
-        wait = WebDriverWait(driver, 10)
-        element = wait.until(expected_conditions.visibility_of_element_located((By.ID, "passcode")))
-    except Exception as e:
-        logger.error(f"Timeout: Expected field not found: {e}")
-        raise ValueError(f"Timeout: Expected field not found: {e}") from e
-
     TOTP = args.totp if args.totp else ""
     if TOTP:
+        try:
+            wait = WebDriverWait(driver, 10)
+            element = wait.until(expected_conditions.visibility_of_element_located((By.ID, "passcode")))
+        except Exception as e:
+            logger.error(f"Timeout: Expected field not found: {e}")
+            raise ValueError(f"Timeout: Expected field not found: {e}") from e
+
         driver.find_element(By.ID, "passcode").send_keys(TOTP)
         driver.find_element(By.XPATH, "/html/body/div/main/div/div[1]/div[2]/div[2]/form/input[3]").click()
 
